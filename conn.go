@@ -117,15 +117,21 @@ func (c *Conn) Start() error {
 
 	resp, untagged, err := c.cmdf("CAPABILITY")
 	if err != nil {
+		log.Printf("CAP: %v (%#v)", resp, untagged)
 		return fmt.Errorf("getting IMAP capabilities: %v", err)
 	}
-	log.Printf("CAP: %v (%#v)", resp, untagged)
 
 	resp, untagged, err = c.cmdf("AUTHENTICATE XOAUTH2 %s", enc)
 	if err != nil {
 		return fmt.Errorf("authenticating: %v", err)
 	}
-	log.Printf("AUTH: %v (%#v)", resp, untagged) // TODO: check for "OK"
+	if !strings.HasPrefix(resp, "OK") {
+		log.Printf("AUTH: %v (%#v)", resp, untagged)
+		return fmt.Errorf("auth failed: %v", resp)
+	}
+
+	return nil
+}
 
 	return nil
 }
