@@ -133,6 +133,14 @@ func (c *Conn) Start() error {
 	return nil
 }
 
+func (c *Conn) Select(box string) error {
+	resp, _, err := c.cmdf("SELECT %q", box)
+	if err != nil {
+		return err
+	}
+	if !strings.HasPrefix(resp, "OK") {
+		return fmt.Errorf("SELECT failed: %v", resp)
+	}
 	return nil
 }
 
